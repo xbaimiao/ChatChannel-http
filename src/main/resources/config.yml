@@ -1,0 +1,13 @@
+format: "[QQ群]%user%: §6%msg%"
+imageFormat: "[§6图片§f]"
+imageHover: "§6点击查看"
+#游戏发送到群
+GameToGroup: "%player_name%: %msg%"
+At:
+  title: " "
+  subTitle: "§7你被§6 %player% §7@了,注意一下聊天栏吧"
+# 不需要输入qq send 即可同步聊天消息到群
+GameChatToGroup:
+  Enable: false
+  groups:
+    - "123456"
