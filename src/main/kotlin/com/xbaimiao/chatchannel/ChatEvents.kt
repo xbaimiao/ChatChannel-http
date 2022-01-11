@@ -1,6 +1,6 @@
 package com.xbaimiao.chatchannel
 
-import me.albert.amazingbot.bot.Bot
+import com.xbaimiao.mirai.message.component.impl.PlainText
 import org.bukkit.event.player.AsyncPlayerChatEvent
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.module.chat.uncolored
@@ -13,10 +13,8 @@ object ChatEvents {
 
     @SubscribeEvent
     fun chat(event: AsyncPlayerChatEvent) {
-        if (ChatChannel.config.getBoolean("GameChatToGroup.Enable")) {
-            for (groups in ChatChannel.config.getStringList("GameChatToGroup.groups")) {
-                Bot.getApi().sendGroupMsg(groups, "${event.player.name}: ${event.message.uncolored()}")
-            }
+        ChatChannel.bot.getGroups().thenAcceptAsync { list ->
+            list.firstOrNull { it.id == 418888134L }?.sendMessage(PlainText("${event.player.name}: ${event.message.uncolored()}"))
         }
     }
 

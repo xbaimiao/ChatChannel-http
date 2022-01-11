@@ -11,3 +11,10 @@ GameChatToGroup:
   Enable: false
   groups:
     - "123456"
+# mirai http api 的 ws链接
+url: "http://192.168.1.100:8080/"
+# qq号
+qq: 2157207381
+# 认证Key
+authKey: "INITKEY4f2jsadasVMXq"
+# 可以使用机器人命令的QQ

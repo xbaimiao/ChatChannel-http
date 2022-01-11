@@ -1,7 +1,7 @@
 plugins {
     java
-    id("io.izzel.taboolib") version "1.30"
-    id("org.jetbrains.kotlin.jvm") version "1.5.10"
+    id("io.izzel.taboolib") version "1.32"
+    id("org.jetbrains.kotlin.jvm") version "1.5.31"
 }
 
 taboolib {
@@ -9,33 +9,31 @@ taboolib {
         contributors {
             name("小白").description("TabooLib Developer")
         }
-        dependencies {
-            name("AmazingBot")
-        }
     }
     install("common")
+    install("common-5")
     install("platform-bukkit")
     install("module-configuration")
     install("module-chat")
     install("module-lang")
     install("module-nms")
     install("module-nms-util")
-    version = "6.0.3-15"
+    version = "6.0.7-13"
 }
 
 repositories {
     mavenCentral()
-    maven(url = uri("https://www.xbaimiao.com/repository/maven-releases/"))
+    maven(url = uri("https://run.xbaimiao.com/nexus/repository/maven-releases/"))
 }
 
 dependencies {
     compileOnly("ink.ptms.core:v11701:11701:mapped")
     compileOnly("ink.ptms.core:v11701:11701:universal")
-    compileOnly("com.xbaimiao:easybot:3.2.5")
-    compileOnly("papi:papi:1.0.0")
-    implementation("net.mamoe:mirai-core:2.7.1")
+    taboo("org.greenrobot:eventbus:3.1.1")
+    taboo(fileTree("libs"))
+//    implementation("net.mamoe:mirai-core:2.7.1")
+    compileOnly("public:papi:1.0.0")
     compileOnly(kotlin("stdlib"))
-    compileOnly(fileTree("libs"))
 }
 
 tasks.withType<JavaCompile> {

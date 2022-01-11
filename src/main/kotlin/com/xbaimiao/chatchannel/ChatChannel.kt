@@ -1,20 +1,22 @@
 package com.xbaimiao.chatchannel
 
-import com.xbaimiao.chatchannel.Switch.isSwitch
-import com.xbaimiao.chatchannel.Switch.setSwitch
-import me.albert.amazingbot.bot.Bot
+import com.xbaimiao.mirai.config.WebSocketBotConfig
+import com.xbaimiao.mirai.message.component.impl.PlainText
+import com.xbaimiao.mirai.packet.impl.websocket.WebSocketBot
 import me.clip.placeholderapi.PlaceholderAPI
 import org.bukkit.entity.Player
 import taboolib.common.env.RuntimeDependency
 import taboolib.common.platform.Plugin
 import taboolib.common.platform.command.PermissionDefault
 import taboolib.common.platform.command.command
+import taboolib.common.platform.function.submit
 import taboolib.module.chat.uncolored
 import taboolib.module.configuration.Config
-import taboolib.module.configuration.SecuredFile
+import taboolib.module.configuration.ConfigFile
 import taboolib.module.nms.sendMap
 import taboolib.platform.BukkitPlugin
-import taboolib.platform.util.sendLang
+import java.net.URL
+import javax.imageio.ImageIO
 
 @RuntimeDependency(
     value = "!org.jetbrains.kotlin:kotlin-stdlib:1.5.31"
@@ -22,12 +24,28 @@ import taboolib.platform.util.sendLang
 object ChatChannel : Plugin() {
 
     @Config(value = "config.yml")
-    lateinit var config: SecuredFile
+    lateinit var config: ConfigFile
         private set
 
     val plugin by lazy { BukkitPlugin.getInstance() }
 
+    lateinit var bot: WebSocketBot
+
+    override fun onDisable() {
+        bot.eventChancel.unregisterListener(GroupEvents)
+        bot.disable()
+    }
+
     override fun onEnable() {
+        bot = WebSocketBot(
+            WebSocketBotConfig(
+                config.getString("url")!!,
+                config.getLong("qq"),
+                config.getString("authKey")!!
+            )
+        )
+        bot.connect()
+        bot.eventChancel.registerListener(GroupEvents)
         command(
             name = "qq",
             permissionDefault = PermissionDefault.TRUE
@@ -35,7 +53,7 @@ object ChatChannel : Plugin() {
             literal("look", optional = true) {
                 dynamic {
                     execute<Player> { sender, context, argument ->
-                        sender.sendMap(argument)
+                        submit(async = true) { sender.sendMap(ImageIO.read(URL(argument))) }
                     }
                 }
             }
@@ -48,20 +66,9 @@ object ChatChannel : Plugin() {
                         )
                         message = message.replace("%msg%", argument.uncolored())
                         sender.chat(argument)
-                        Bot.getApi().bot.groups.forEach {
-                            Bot.getApi().sendGroupMsg(it.id.toString(), message)
+                        bot.getGroups().thenAcceptAsync { list ->
+                            list.firstOrNull { it.id == 418888134L }?.sendMessage(PlainText(message))
                         }
-                    }
-                }
-            }
-            literal("onOff", optional = true) {
-                execute<Player> { sender, context, argument ->
-                    if (sender.isSwitch()) {
-                        sender.setSwitch(false)
-                        sender.sendLang("off")
-                    } else {
-                        sender.setSwitch(true)
-                        sender.sendLang("on")
                     }
                 }
             }
